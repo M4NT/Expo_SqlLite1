@@ -3,12 +3,13 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import AnimalService from '../services/animal.service'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Animal } from '../models/animal.model'
+import { Image } from 'react-native'
 export default class home extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.findAllAnimal()        
+        this.findAllAnimal()
     }
 
     state = {
@@ -16,22 +17,22 @@ export default class home extends React.Component {
         value: null,
         onChangeText: null,
         dataId: null,
-        dataInsert:null
+        dataInsert: null
     }
 
     //acionado quando o componente e montado
-    componentDidMount () {
-        this.findAllAnimal ();
-      }
+    componentDidMount() {
+        this.findAllAnimal();
+    }
 
-      //escuta atualizações na lista
-      componentDidUpdate (prevProps, prevState) {
+    //escuta atualizações na lista
+    componentDidUpdate(prevProps, prevState) {
         if (prevState.data !== this.state.data) {
-          this.findAllAnimal ();
+            this.findAllAnimal();
         }
-      }
-   
-    deleteAnimal=(id)=> {
+    }
+
+    deleteAnimal = (id) => {
         this.findAnimalById(id)
         if (this.state.dataId != null || this.state.dataId != undefined) {
             AnimalService.deleteById(id)
@@ -39,17 +40,17 @@ export default class home extends React.Component {
         }
     }
 
-    insertAnimal=(item)=> {
-        let file:Animal=new Animal()
-        file.nome=item
+    insertAnimal = (item) => {
+        let file: Animal = new Animal()
+        file.nome = item
 
-        const insertId=AnimalService.addData(file);
-        if(insertId==null || insertId==undefined){
+        const insertId = AnimalService.addData(file);
+        if (insertId == null || insertId == undefined) {
             alert("Não foi possivel inserir o novo animal")
         }
     }
 
-    findAllAnimal=()=> {
+    findAllAnimal = () => {
         AnimalService.findAll()
             .then((response: any) => {
                 this.setState({
@@ -60,10 +61,10 @@ export default class home extends React.Component {
                 console.log(error);
             }
     }
-    findAnimalById=(id)=> {
+    findAnimalById = (id) => {
         AnimalService.findById(id)
             .then((response: any) => {
-                if (response._array.length >0 && response!= null && response!= undefined) {
+                if (response._array.length > 0 && response != null && response != undefined) {
                     this.setState({
                         dataId: response._array[0]
                     })
@@ -77,12 +78,13 @@ export default class home extends React.Component {
     render() {
 
         //extrai as propriedades entre chaves
-        const {data,value,dataInsert} = this.state;
-        
+        const { data, value, dataInsert } = this.state;
+
         const animalList = data.map((item, key) => {
             return (
                 <>
-                    <Text >id:{item.id} nome:{item.nome}</Text>
+                    <Text style={styles.animalItem} key={key}>
+                        Id: {item.id} Nome: {item.nome}</Text>
                 </>
             )
         })
@@ -91,30 +93,36 @@ export default class home extends React.Component {
 
             <View style={styles.container}>
 
-                <Text style={{ fontSize: 20, paddingBottom: 20 }}>Lista de Animais</Text>
-                <TextInput
-                    placeholder="digite o id"
-                    style={styles.textInput}
-                    onChangeText={text => { this.setState({ value: text }) }}
-                    value={value}
-                />
-               <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { value == null ? alert("O campo de id não pode ser vazio") : this.deleteAnimal(value) }} style={{ alignItems: "center", backgroundColor: 'green' }}>
-                        <Icon name="md-remove" size={30} color="white" />
-                    </TouchableOpacity>
+                <View style={styles.containerCard}>
+                    <Image source={require('../services/Images/Capivara.jpg')} style={{ borderRadius: 500, paddingBottom: 20, width: 150, height: 150, alignItems: "center", justifyContent: "center" }} />
+                    <Text style={{ fontSize: 32, paddingBottom: 10, color: '#fff', fontWeight: 800}}>Nomes de Capivara</Text>
                 </View>
+
                 <TextInput
-                    placeholder="digite o nome do novo animal"
+                    placeholder="Digite o nome da Capivara"
                     style={styles.textInput}
                     onChangeText={textAdd => { this.setState({ dataInsert: textAdd }) }}
                     value={dataInsert}
                 />
-               
+
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() =>  dataInsert == null ? alert("O campo de nome não pode ser vazio") :this.insertAnimal(dataInsert)} style={{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => dataInsert == null ? alert("O campo de nome não pode ser vazio") : this.insertAnimal(dataInsert)} style={{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
+                <TextInput
+                    placeholder="Digite o id"
+                    style={styles.textInput}
+                    onChangeText={text => { this.setState({ value: text }) }}
+                    value={value}
+                />
+                <View style={styles.containerTouch}>
+                    <TouchableOpacity onPress={() => { value == null ? alert("O campo de id não pode ser vazio") : this.deleteAnimal(value) }} style={{ alignItems: "center", backgroundColor: 'red' }}>
+                        <Icon name="md-remove" size={30} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={{ fontSize: 24, paddingBottom: 10, paddingTop: 25, color: '#fff', fontWeight: 800}}>Nomes criados</Text>
                 {animalList}
             </View>
         );
@@ -124,19 +132,19 @@ export default class home extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f0f0', // Cor de fundo mais suave
+        backgroundColor: '#095c79', // Cor de fundo mais suave
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
 
     textInput: {
         width: 250,
         height: 40,
-        borderColor: '#0000ff', 
+        borderColor: '#0000ff',
         borderWidth: 1,
         marginTop: 20, // Espaçamento superior aumentado
         paddingVertical: 10, // Preenchimento vertical para centralizar o texto
-        paddingHorizontal: 15, 
+        paddingHorizontal: 15,
         fontSize: 16, // Tamanho de fonte um pouco maior
         backgroundColor: '#fff', // Cor de fundo do input
         borderRadius: 5, // Cantos arredondados
@@ -151,10 +159,30 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff', // Cor do texto do botão
         fontSize: 18, // Tamanho de fonte um pouco maior
-        textAlign: 'center', 
+        textAlign: 'center',
     },
-    containerTouch:{
+    containerTouch: {
         width: 200,
-         padding: 10
+        padding: 10
+    },
+    animalItem: {
+        borderRadius: 5,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        marginTop: 10,
+        marginBottom: 10,
+        padding: 10,
+        fontSize: 16,
+        color: '#fff'
+    },
+    containerCard: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: '#ccc',
+        borderRadius: 16,
+        padding: 25,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
     }
 });
